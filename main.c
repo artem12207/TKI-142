@@ -1,56 +1,117 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 #include <stdbool.h>
-#include <errno.h>
 #include <float.h>
 
 /**
-* @brief Функция проверяющая существование функции в этой точке.
-* @param x Входной параметр - точка x.
-* @return Возвращает результат.
+* @brief расситывает значение у
+* @param x значение х получаемое из цикла for
+* @return возвращает значение у
 */
-double result(double x);
+double yFunc(double x);
 
 /**
-* @brief Функция принимающая и проверяющая значение на ввод.
-* @param message - текст сообщения для пользователя.
-* @return Значение.
+* @brief проверяет, существует ли функция в точке х
+* @param x аргумент функции
+* @return возвращает true если существует
 */
-double get_value(const char* message);
+bool isExists(const double x);
+
+/**
+* @brief проверка введеного значения
+* @return возвращает значение если ввод правильный, иначе выводит сообщение об ошибке
+*/
+double getNumber();
+
+/**
+* @brief проверяет правильность ввода шага
+* @param step введенное значение шага расчета
+* @return возвращает true если ввод правильный
+*/
+bool checkStep(double step);
+
+/**
+* @brief проверяет правильность ввода начальной и конечной точек расчета
+* @param startPoint введенное значение начальной точки расчета
+* @param endPoint введенное значение конечной точки расчета
+* @return возвращает true если ввод правильный
+*/
+bool comparePoints(double startPoint, double endPoint);
 
 /**
 * @brief Точка входа в программу
-* @return Возврящает 0, если программа работает верно, иначе 1
+* @return Возвращает 0, если программа работает корректно, иначе 1
 */
 int main()
 {
-const double x_start = get_value("Start for x: ");
-double x = x_start;
-const double x_finish = get_value("Finish for x: ");
-const double dx = get_value("Step for x: ");
-while (fabs(x - x_finish) <= DBL_MIN)
-{
-double y = result(x);
-printf("%lf\t%0.2lf\t\n", x, y);
-x += dx;
+    double startPoint = getNumber();
+    double endPoint = getNumber();
+    double step = getNumber();
+
+    checkStep(step);
+    comparePoints(startPoint, endPoint);
+    for(double x = startPoint; x <= endPoint + DBL_EPSILON ; x += step)  
+    {
+        if (isExists(x))
+        {
+            printf("\n %7.4lf %7.4lf", x, yFunc(x));
+        }
+         else
+        {
+            printf("\n %7.4lf %s", x, "no solution");
+        }
+    }
+    return 0;
 }
-return 0;
-}
-double result(double x)
+
+double yFunc(double x)
 {
-return 3*sin(sqrt(x))+0,39*x-3,8;
+    return 3 * sin(sqrt(x)) + 0.39 * x - 3.8;
 }
-double get_value(const char* message)
-{
-double a;
-printf("%s", message);
-int res = scanf("%lf", &a);
-if (res != 1)
-{
-errno = EIO;
-perror("Wrong value");
-abort();
+
+
+
+double getNumber() 
+{ 
+    double number; 
+    if (scanf("%lf", &number) != 1) 
+    { 
+         errno = EIO; 
+         perror("Invalid value entered");  
+         abort();  
+    } 
+    return number;
 }
-return a;
+
+bool isExists(const double x)
+{
+    if (x > -DBL_EPSILON)
+    {
+        return true;
+    }
+    return false;
+    
+}
+
+bool checkStep(double step)
+{
+    if (step <= DBL_EPSILON)
+    {
+        errno = EIO; 
+        perror("Invalid value entered"); 
+        abort();
+    }
+    return true;
+}
+
+bool comparePoints(double startPoint, double endPoint)
+{
+    if (startPoint - endPoint >= DBL_EPSILON)
+    {
+        errno = EIO; 
+        perror("Invalid value entered"); 
+        abort();
+    }
+    return true;
 }
