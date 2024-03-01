@@ -1,130 +1,92 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <errno.h>
-#include <float.h>
 #include <math.h>
+#include <stdlib.h>
+#include <float.h>
 
-/**
-* @brief Пользовательский ввод
-*/
-enum user_input
+enum solve
 {
-/**
-* @brief Объём
-*/
-VOLUME = 1,
-/**
-* @brief Площадь поверхности
-*/
-SURFACE_AREA = 2
+    VOLUME = 1,
+    SURFACEAREA = 2
 };
 
 /**
-* @brief Получает целое значение
-* @remarks Экстренное завершение программы, в случае неправильного ввода
-* @return Целое значение
+* @brief Получешние введеного значения из консоли
+* @return Возвращает число при условии правильного ввода
 */
-int get_choice();
+float getNumber();
 
 /**
-* @brief Функция для проверки ввода радиуса фигуры
-* @remarks Экстренное завершение программы, в случае неправильного ввода
-* @return Радииус фигуры
+* @brief Выбор типа расчёта
+* @return Возвращает выбор пользователя
 */
-double get_radius();
+int selectSolve();
 
 /**
-* @brief Функция для подсчёта объёма шара
-* @param r - радиус шара
-* @return Периметр прямоугольника
+* @brief Поиск значения volume
+* @param r радиус для функции getVolume
+* @return Возвращает результат функции getVolume
 */
-double get_volume(double r);
+float getVolume(float r);
 
 /**
-* @brief Функция для подсчёта площади поверхности шара
-* @param r - радиус шара
-* @return Площадь прямоугольника
+* @brief Поиск значения surfaceArea
+* @param r радиус для функции getSurfaceArea
+* @return Возвращает площадь поверхности
 */
-double get_surface_area(double r);
+float getSurfaceArea(float r);
 
 /**
 * @brief Точка входа в программу
-* @return Возврящает 0, если программа работает верно, иначе 1
+* @return Возвращает 0, если программа работает корректно, иначе 1
 */
 int main()
 {
-setlocale(LC_ALL, "RU");
-
-puts("Введите номер соответствующий заданию:\n");
-printf("%d - для вычисления объёма шара\n", VOLUME);
-printf("%d - для вычисления площади поверхности шара\n", SURFACE_AREA);
-
-int choice = get_choice();
-
-enum user_input figure = (enum user_input)choice;
-
-puts("Введите радиус шара: ");
-double r = get_radius();
-
-switch (figure)
-{
-case VOLUME:
-{
-double volume = get_volume(r);
-printf("%lf - объём шара", volume);
-break;
-}
-case SURFACE_AREA:
-{
-double surface_area = get_surface_area(r);
-printf("%lf - площадь поверхности шара", surface_area);
-break;
-}
-default:
-{
-errno = EDOM;
-perror("Ошибка ввода");
-return EXIT_FAILURE;
-}
+    float r = getNumber();
+    printf("введите %d чтобы получить объем, или %d чтобы получить площадь поверхности: ", VOLUME, SURFACEAREA);
+    int solve = selectSolve();
+    switch ("%d", solve)
+    {
+    case VOLUME:
+        printf("volume = %f", getVolume(r));
+        break;
+    case SURFACEAREA:
+        printf("surface area = %f", getSurfaceArea(r));
+        break;
+    default:
+        printf("\n " "Неправильный ввод" "\n");
+        break;
+    }
+    return 0;
 }
 
-return EXIT_SUCCESS;
+float getVolume(float r)
+{
+    return 4 * M_PI * pow(r, 3) / 3;
 }
 
-int get_choice()
+float getSurfaceArea(float r)
 {
-int choice;
-int result = scanf("%d", &choice);
-if (result != 1)
-{
-errno = EIO;
-perror("Ошибка ввода");
-abort();
+    return 4 * M_PI * pow(r, 2);
 }
 
-return choice;
+float getNumber() 
+{ 
+ float number; 
+    if (scanf("%f", &number) != 1 || (number < DBL_EPSILON)) 
+    { 
+         printf("%s" "Неправильный ввод"); 
+         abort();  
+    } 
+    return number;
 }
 
-double get_radius()
+int selectSolve()
 {
-double radius;
-int result = scanf("%lf", &radius);
-if (result != 1 && radius <= 0)
-{
-errno = EIO;
-perror("Введено неправильное значение");
-abort();
-}
-return radius;
-}
-
-double get_volume(double r)
-{
-return (4 / 3) * 3.14159265358979323846 * pow(r,3);
-}
-
-double get_surface_area(double r)
-{
-return 4 * 3.14159265358979323846 * pow(r,2);
+    int number;
+    if (scanf("%d", &number) != VOLUME && number != SURFACEAREA)
+    {
+        printf("\n" "Неправильный ввод" "\n");
+        abort();
+    }
+    return number;
 }
